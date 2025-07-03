@@ -1,11 +1,25 @@
-import { useRouter } from 'next/router';
 import style from './[id].module.css';
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import fetchOneBook from '@/lib/fetch-one-book';
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext,
-) => {
+export async function getStaticPaths() {
+  return {
+    paths: [
+      {
+        params: { id: '1' },
+      },
+      {
+        params: { id: '2' },
+      },
+      {
+        params: { id: '3' },
+      },
+    ],
+    fallback: false,
+  };
+}
+
+export const getStaticProps = async (context: GetServerSidePropsContext) => {
   const id = context.params!.id;
 
   const book = await fetchOneBook(Number(id));
@@ -18,7 +32,7 @@ export const getServerSideProps = async (
 
 export default function Page({
   book,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   if (!book) {
     return '문제가 발생했습니당';
   }
